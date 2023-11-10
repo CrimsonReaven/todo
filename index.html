@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+ <title>ToDo Lis</title>
+ <meta charset="utf-8">
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+ <link rel="stylesheet" type="text/css" href="css/style.css">
+ <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+ <script defer src="js/main.js"></script>
+</head>
+<body>
+ <div class="todoList" id="todoList">
+  <div class="navbar navbar-light topForm">
+   <div class="col-3 btn-group">
+    <button class="btn btn-secondary" v-on:click="onMainScreen">Home</button>
+    <button class="btn btn-light" v-on:click="createFolderModalOpen">Add Folder</button>   
+   </div>
+   <div class="col-5 input-group">
+    <input type="text" v-model="searchKey" class="form-control" placeholder="search" aria-describedby="searchBtn">
+    <div class="input-group-append">
+     <button class="btn btn-light" id="searchBtn" v-on:click="checkSearch">&#x1f50d;</button>
+    </div>
+   </div>      
+  </div>
+
+  <div v-if='createf' class="modal-mask">
+         <div class="modal-wrapper">
+           <div class="modal-container">
+             <div class="modal-header">
+               <h2 class="mx-auto">Create folder</h2>
+             </div>
+
+             <div class="modal-body">
+              <div>
+                <input class="form-control" v-model="newFolderName" placeholder="folder name">
+               </div>
+               <div class="text-center mt-3">
+                <h6>Choose color of folder:</h6>
+                <div>
+                 <ul class="list-unstyled d-flex flex-wrap justify-content-center">
+                  <li v-for="(color, index) in colorList" v-bind:key="color.index">
+                   <div v-bind:style="[{backgroundColor: color.code}, {height: color.active ? 2 + 'em' : 1.7 + 'em'}, {width: color.active ? 2 + 'em' : 1.7 + 'em'}]" class="colorItem m-2" v-on:click="chooseColor(index)"></div>
+                  </li>
+                 </ul>
+                </div>
+               </div>               
+             </div>
+
+             <div class="modal-footer">
+               <div>
+                  <button class="btn btn-dark" @click="createFolder">create</button>               
+                  <button class="btn colorBtn " @click="cancelCreate">cancel</button>
+                </div>
+                                
+             </div>
+           </div>
+      </div>
+  </div>
+
+  <div class="d-flex flex-column text-center m-5" v-if="divResult">
+   <div class="card mx-auto mb-5" v-for="(res, index) in searchResult" style="max-width:18em; width:15em">
+     <div class="card-header">
+       {{res.parentFolder}}
+     </div>
+     <div class="card-body" >
+      <div v-for="(taskRes, index1) in res">
+       <div class="d-flex flex-row" v-for="(taskText, index2) in taskRes">
+      <span v-html="taskText.icon"></span>
+      <h5>{{taskText.task}}</h5>
+     </div>
+      </div>
+       
+     </div>
+   </div>
+  </div>
+
+  <div class="d-flex flex-wrap text-center mt-5 folderBlock" v-if="folderlsList">
+    <div v-for="(folder, index) in folders" v-bind:key="folder.index" class="card border-dark m-3" style="max-width: 18rem;">
+      <div v-on:click="openFolder(index)" class="card-header">{{folder.name}}</div>
+      <div class="card-body text-dark">
+       <p class="card-text">{{folder.dataCreated}}</p>
+       <div class="btn-group">
+      <button class="btn btn-secondary" v-on:click="openEditFolderModal(index)">Edit</button>
+      <button class="btn colorBtn" v-on:click="deleteFolder(index)">Delete</button>
+     </div>
+      </div>
+    </div>
+  </div>
+  
+  <div v-if='editedfolder' class="modal-mask">
+         <div class="modal-wrapper">
+           <div class="modal-container">
+             <div class="modal-header">
+               <h2 class="mx-auto">Edit folder</h2>
+             </div>
+
+             <div class="modal-body">
+              <div class="text-center">
+               <input class="form-control" v-model="currentFolder.name" placeholder="folder name">
+              </div>
+               
+               <div class="text-center mt-3">
+                <h6>Choose color of folder:</h6>
+                <div>
+                 <ul class="list-unstyled d-flex flex-wrap justify-content-center">
+                  <li v-for="(color, index) in colorList" v-bind:key="color.index">
+                   <div v-bind:style="[{backgroundColor: color.code}, {height: color.active ? 2 + 'em' : 1.7 + 'em'}, {width: color.active ? 2 + 'em' : 1.7 + 'em'}]" class="colorItem m-2" v-on:click="chooseColor(index)"></div>
+                  </li>
+                 </ul>
+                </div>
+               </div>               
+             </div>
+
+             <div class="modal-footer">
+              <div>
+                 <button class="btn btn-dark" @click="saveChanges">save</button>               
+                 <button class="btn colorBtn " @click="cancelChanges">cancel</button>
+               </div>                 
+             </div>
+           </div>
+         </div>
+  </div>
+  <folder v-bind:folder="currentFolder"  v-if="showModal" @close="showModal = false">   
+  </folder>  
+ </div>
+</body>
+</html> 
